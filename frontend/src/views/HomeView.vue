@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <section class="full-section-height">
     Home View
-  </div>
+  </section>
 </template>
 
 <script>
