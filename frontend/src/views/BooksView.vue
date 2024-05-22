@@ -11,7 +11,6 @@
 <script>
 import SectionHeader from "@/components/SectionHeader.vue";
 import BookList from "@/components/BookList.vue";
-import books from "@/db.js";
 import Pagination from "@/components/Pagination.vue";
 
 export default {
@@ -24,7 +23,7 @@ export default {
   data() {
     return {
       sectionTitle: "Kitaplar",
-      books: books,
+      books: [],
       currentPage: 1,
       itemsPerPage: 8,
     }
@@ -42,7 +41,20 @@ export default {
   methods: {
     updatePage(page) {
       this.currentPage = page
+    },
+    async fetchBooks() {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/books");
+        const data = await response.json()
+        console.log(data)
+        this.books = data.books
+      } catch (error) {
+
+      }
     }
+  },
+  created() {
+    this.fetchBooks()
   }
 }
 </script>
