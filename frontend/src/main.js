@@ -1,17 +1,10 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import {createApp} from "vue";
-import App from "@/App.vue"
+import App from "@/App.vue";
+import router from "@/router/index.js";
 
-const app = createApp(App)
-app.mount('#app')
 
-// const app = createApp({
-//     data() {
-//         return {
-//             name: 'Nurullah'
-//         }
-//     },
-//     template: `<h1>Benim adım {{this.name}}</h1>`
-// })
-//
-// app.mount("#app")
-
+const app = createApp(App);
+app.use(router)
+app.mount('#app');
