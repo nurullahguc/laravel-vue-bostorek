@@ -1,6 +1,58 @@
 <template>
-  <section class="full-section-height">
+  <section>
     <Carousel :items="carouselItems" height="400px"></Carousel>
+  </section>
+  <section class="my-5" >
+    <div class="container">
+      <SectionHeader title="Featured Books" text="We declare long prop names using camelCase because this avoids"/>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="list-group">
+            <a href="javascript:void(0)" class="list-group-item list-group-item-action"
+               :class="{active: selectedFilter === 'latest'}" @click="selectFilter('latest')">
+              Latest Books
+            </a>
+            <a href="javascript:void(0)" class="list-group-item list-group-item-action"
+               :class="{active: selectedFilter === 'best'}" @click="selectFilter('best')">
+              Best Ratings
+            </a>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="accordion">
+            <div class="accordion-item" v-for="(book, index) in filteredBooks" :key="index">
+              <h2 class="accordion-header">
+                <button
+                    class="accordion-button"
+                    type="button"
+                    :class="{collapsed: openAcardionIndex !== index}"
+                    @click="toggleAccordion(index)"
+                >
+                  <strong>{{ book.title }} - {{ book.author }}</strong>
+                </button>
+              </h2>
+              <div class="accordion-collapse collapse"
+                   :class="{show: openAcardionIndex === index}"
+              >
+                <div class="accordion-body">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <img src="../assets/images/b1.jpg" class="img-fluid" alt="">
+                    </div>
+                    <div class="col-md-8 d-flex flex-column justify-content-center">
+                      <p>{{ book.description }}</p>
+                      <div class="badge align-self-start" style="background-color: var(--secondary-color)">
+                        {{book.rating}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -9,13 +61,12 @@ import Carousel from "@/components/widgets/Carousel.vue";
 import hero_1 from "@/assets/images/hero_1.jpg";
 import hero_2 from "@/assets/images/hero_2.jpg";
 import hero_3 from "@/assets/images/hero_3.jpg";
+import SectionHeader from "@/components/SectionHeader.vue";
 
 
 export default {
   name: "HomeView",
-  components: {
-    Carousel
-  },
+  components: {Carousel, SectionHeader},
   data() {
     return {
       carouselItems: [
@@ -38,11 +89,66 @@ export default {
           description: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.'
         }
       ],
+      selectedFilter: 'latest',
+      books: [],
+      openAcardionIndex: 0,
+    }
+  },
+  methods: {
+    selectFilter(name) {
+      this.selectedFilter = name
+    },
+    async fetchBooks() {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/books");
+        const data = await response.json()
+        this.books = data.books
+      } catch (error) {
+      }
+    },
+    toggleAccordion(index) {
+      if (this.openAcardionIndex === index) {
+        this.openAcardionIndex = -1
+      } else {
+        this.openAcardionIndex = index
+      }
+    }
+  },
+  created() {
+    this.fetchBooks()
+  },
+  computed: {
+    filteredBooks() {
+      const copiedBooks = [...this.books];
+      if (this.selectedFilter === 'latest') {
+        return copiedBooks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 4);
+      } else if (this.selectedFilter === 'best') {
+        return copiedBooks.sort((a, b) => b.rating - a.rating).slice(0, 4);
+      }
     }
   }
 }
 </script>
 
 <style scoped>
+
+.list-group-item.active{
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.accordion-button{
+  color: var(--primary-color);
+}
+
+.accordion-button:not(.collapsed){
+  background-color: var(--secondary-color);
+  color: #ffffff;
+}
+
+.accordion-button:focus{
+  outline: none;
+  box-shadow: none;
+}
 
 </style>
