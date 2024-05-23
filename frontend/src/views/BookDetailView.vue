@@ -95,7 +95,7 @@
 
 <script>
 import SectionHeader from "@/components/SectionHeader.vue";
-import books from "@/db.js";
+
 
 export default {
   name: "BookDetailView",
@@ -115,6 +115,9 @@ export default {
   methods: {
     goToBackBook() {
       this.$router.push({name: 'books'})
+    },
+    async fetchABook(){
+        const response = await fetch(´´)
     }
   }
 }
