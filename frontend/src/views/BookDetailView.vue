@@ -1,7 +1,7 @@
 <template>
   <section>
-    <div class="container">
-      <SectionHeader :title="book.name" :text="book.author"/>
+    <div v-if="!loading" class="container">
+      <SectionHeader :title="book.title" :text="book.author"/>
       <font-awesome-icon icon="arrow-left" size="2xl" class="mb-2" style="cursor:pointer;" @click="goToBackBook"/>
       <div class="row mb-4">
         <div class="col-lg-6">
@@ -14,7 +14,7 @@
               <div class="col-lg-6">
                 <strong>Page</strong>
               </div>
-              <div class="col-lg-6">{{ book.page }}</div>
+              <div class="col-lg-6">{{ book.page_number }}</div>
             </div>
             <div class="row border-bottom pb-2">
               <div class="col-lg-6">
@@ -32,7 +32,7 @@
               <div class="col-lg-6">
                 <strong>Upload Date</strong>
               </div>
-              <div class="col-lg-6">{{ book.uploadDate }}</div>
+              <div class="col-lg-6">{{ book.created_at }}</div>
             </div>
           </div>
           <div class="comments-section">
@@ -89,6 +89,9 @@
           </div>
         </div>
       </div>
+    </div >
+    <div class="container" v-else>
+      <h1 class="text-primary text-center">Loading</h1>
     </div>
   </section>
 </template>
@@ -104,20 +107,26 @@ export default {
   },
   data() {
     return {
-      book: null
+      book: null,
+      loading: true
     }
   },
   created() {
-    const bookId = this.$route.params.id;
-    this.book = books.find(book => book.id === parseInt(bookId))
-    console.log(this.book)
+    // const bookId = this.$route.params.id;
+    // this.book = books.find(book => book.id === parseInt(bookId))
+    // console.log(this.book)
+    this.fetchABook()
   },
   methods: {
     goToBackBook() {
       this.$router.push({name: 'books'})
     },
-    async fetchABook(){
-        // const response = await fetch(´´)
+    async fetchABook() {
+      const bookId = this.$route.params.id;
+      const response = await fetch(`http://127.0.0.1:8000/api/books/${bookId}`)
+      const data = await response.json()
+      this.book = data;
+      this.loading = false;
     }
   }
 }
