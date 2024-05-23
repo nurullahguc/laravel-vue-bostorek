@@ -117,7 +117,7 @@ export default {
       this.$router.push({name: 'books'})
     },
     async fetchABook(){
-        const response = await fetch(´´)
+        // const response = await fetch(´´)
     }
   }
 }
