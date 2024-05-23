@@ -7,16 +7,16 @@
           <router-link class="nav-link" to="/">Home</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="books">Books</router-link>
+          <router-link class="nav-link" to="/books">Books</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="contact">Contact Us</router-link>
+          <router-link class="nav-link" to="/contact">Contact Us</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="login">Login</router-link>
+          <router-link class="nav-link" to="/login">Login</router-link>
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" to="register">Register</router-link>
+          <router-link class="nav-link" to="/register">Register</router-link>
         </li>
       </ul>
     </div>

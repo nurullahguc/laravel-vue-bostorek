@@ -3,7 +3,7 @@
     <div class="container">
       <SectionHeader title="Books" text="We declare long prop names using camelCase because this avoids"/>
       <BookList :books="paginatedBooks"/>
-      <Pagination :currentPage="currentPage" :totalPages="totalPages" @page-changed="updatePage"/>
+      <PaginationWidget :currentPage="currentPage" :totalPages="totalPages" @page-changed="updatePage"/>
     </div>
   </section>
 </template>
@@ -11,24 +11,27 @@
 <script>
 import SectionHeader from "@/components/SectionHeader.vue";
 import BookList from "@/components/BookList.vue";
-import Pagination from "@/components/Pagination.vue";
+import PaginationWidget from "@/components/widgets/PaginationWidget.vue";
+import {useBookStore} from "@/stores/bookStore.js";
+import {mapState} from "pinia";
 
 export default {
   name: "BooksView",
   components: {
     SectionHeader,
     BookList,
-    Pagination
+    PaginationWidget
   },
   data() {
     return {
       sectionTitle: "Kitaplar",
-      books: [],
       currentPage: 1,
       itemsPerPage: 8,
     }
   },
   computed: {
+    ...mapState(useBookStore, ['books']),
+
     totalPages() {
       return Math.ceil(this.books.length / this.itemsPerPage)
     },
@@ -42,20 +45,8 @@ export default {
     updatePage(page) {
       this.currentPage = page
     },
-    async fetchBooks() {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/books");
-        const data = await response.json()
-        console.log(data)
-        this.books = data.books
-      } catch (error) {
-
-      }
-    }
   },
-  created() {
-    this.fetchBooks()
-  }
+
 }
 </script>
 

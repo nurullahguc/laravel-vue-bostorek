@@ -1,8 +1,8 @@
 <template>
   <section>
-    <Carousel :items="carouselItems" height="400px"></Carousel>
+    <CarouselWidget :items="carouselItems" height="400px"></CarouselWidget>
   </section>
-  <section class="my-5" >
+  <section class="my-5">
     <div class="container">
       <SectionHeader title="Featured Books" text="We declare long prop names using camelCase because this avoids"/>
       <div class="row">
@@ -19,7 +19,14 @@
           </div>
         </div>
         <div class="col-md-8">
-          <div class="accordion">
+          <div v-if="isLoading">
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+          <div v-else class="accordion">
             <div class="accordion-item" v-for="(book, index) in filteredBooks" :key="index">
               <h2 class="accordion-header">
                 <button
@@ -42,7 +49,7 @@
                     <div class="col-md-8 d-flex flex-column justify-content-center">
                       <p>{{ book.description }}</p>
                       <div class="badge align-self-start" style="background-color: var(--secondary-color)">
-                        {{book.rating}}
+                        {{ book.rating }}
                       </div>
                     </div>
                   </div>
@@ -57,16 +64,17 @@
 </template>
 
 <script>
-import Carousel from "@/components/widgets/Carousel.vue";
+import CarouselWidget from "@/components/widgets/CarouselWidget.vue";
 import hero_1 from "@/assets/images/hero_1.jpg";
 import hero_2 from "@/assets/images/hero_2.jpg";
 import hero_3 from "@/assets/images/hero_3.jpg";
 import SectionHeader from "@/components/SectionHeader.vue";
-
+import {useBookStore} from "@/stores/bookStore.js";
+import {mapState} from "pinia"
 
 export default {
   name: "HomeView",
-  components: {Carousel, SectionHeader},
+  components: {CarouselWidget, SectionHeader},
   data() {
     return {
       carouselItems: [
@@ -90,21 +98,13 @@ export default {
         }
       ],
       selectedFilter: 'latest',
-      books: [],
       openAcardionIndex: 0,
+      bookStore: useBookStore()
     }
   },
   methods: {
     selectFilter(name) {
       this.selectedFilter = name
-    },
-    async fetchBooks() {
-      try {
-        const response = await fetch("http://127.0.0.1:8000/api/books");
-        const data = await response.json()
-        this.books = data.books
-      } catch (error) {
-      }
     },
     toggleAccordion(index) {
       if (this.openAcardionIndex === index) {
@@ -114,10 +114,8 @@ export default {
       }
     }
   },
-  created() {
-    this.fetchBooks()
-  },
   computed: {
+    ...mapState(useBookStore, ['books', 'isLoading']),
     filteredBooks() {
       const copiedBooks = [...this.books];
       if (this.selectedFilter === 'latest') {
@@ -132,21 +130,21 @@ export default {
 
 <style scoped>
 
-.list-group-item.active{
+.list-group-item.active {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
 
-.accordion-button{
+.accordion-button {
   color: var(--primary-color);
 }
 
-.accordion-button:not(.collapsed){
+.accordion-button:not(.collapsed) {
   background-color: var(--secondary-color);
   color: #ffffff;
 }
 
-.accordion-button:focus{
+.accordion-button:focus {
   outline: none;
   box-shadow: none;
 }

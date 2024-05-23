@@ -11,11 +11,13 @@
       <p class="card-text">{{ truncatedText }}</p>
       <div class="d-flex justify-content-between align-items-center">
         <a href="#">Read More</a>
-        <p style="background-color: var(--primary-color);" class="py-1 px-2  text-white badge mb-0">{{ book.uploadDate }}</p>
+        <p style="background-color: var(--primary-color);" class="py-1 px-2  text-white badge mb-0">{{
+            book.uploadDate
+          }}</p>
       </div>
     </div>
     <span :class="ratingBadgeClass"
-          class="position-absolute top-0 start-100 translate-middle p-2 text-light rounded-circle border border-2 border-light">
+          class="position-absolute rating-badge top-0 start-100 translate-middle p-2 text-light rounded-circle border border-2 border-light">
       {{ book.rating }}
     </span>
   </div>
@@ -52,8 +54,13 @@ export default {
 
 <style scoped>
 
-.card-text{
+.card-text {
   min-height: 70px;
+}
+
+.rating-badge {
+  min-width: 45px;
+  text-align: center;
 }
 
 </style>

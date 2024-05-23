@@ -89,7 +89,7 @@
           </div>
         </div>
       </div>
-    </div >
+    </div>
     <div class="container" v-else>
       <h1 class="text-primary text-center">Loading</h1>
     </div>
@@ -98,7 +98,8 @@
 
 <script>
 import SectionHeader from "@/components/SectionHeader.vue";
-
+import {useBookStore} from "@/stores/bookStore.js";
+import {mapState} from "pinia";
 
 export default {
   name: "BookDetailView",
@@ -112,22 +113,22 @@ export default {
     }
   },
   created() {
-    // const bookId = this.$route.params.id;
-    // this.book = books.find(book => book.id === parseInt(bookId))
-    // console.log(this.book)
-    this.fetchABook()
+    this.selectBook()
   },
   methods: {
     goToBackBook() {
       this.$router.push({name: 'books'})
     },
-    async fetchABook() {
+    selectBook() {
       const bookId = this.$route.params.id;
-      const response = await fetch(`http://127.0.0.1:8000/api/books/${bookId}`)
-      const data = await response.json()
-      this.book = data;
-      this.loading = false;
+      this.book = this.selectedBook(bookId)
+      this.loading = false
     }
+  },
+  computed: {
+    ...mapState(useBookStore, {
+      selectedBook: (state) => state.selectedBook
+    })
   }
 }
 </script>
