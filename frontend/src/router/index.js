@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import BooksView from "@/views/BooksView.vue";
 import DashboardView from "@/views/DashboardView.vue";
 import LoginView from "@/views/LoginView.vue";
+import LoginVeeView from "@/views/LoginVeeView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import BookDetailView from "@/views/BookDetailView.vue";
 
@@ -40,6 +41,11 @@ const router = createRouter({
             path: '/login',
             component: LoginView,
             name: 'login'
+        },
+        {
+            path: '/login-vee',
+            component: LoginVeeView,
+            name: 'login-vee'
         },
     ],
     linkActiveClass: 'active-link'

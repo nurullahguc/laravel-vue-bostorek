@@ -7,7 +7,11 @@ import router from "@/router/index.js";
 import {createPinia} from "pinia";
 import {useBookStore} from "@/stores/bookStore.js";
 import {useAuthStore} from "@/stores/authStore.js";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css"
 
+
+// Import the CSS or use your own!
 // Font Awsome
 import {library} from '@fortawesome/fontawesome-svg-core'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -32,6 +36,7 @@ bookStore.fetchBooks().then(() => {
     app.use(pinia)
         .use(router)
         .component('font-awesome-icon', FontAwesomeIcon)
+        .use(Toast)
         .mount('#app');
 
 })

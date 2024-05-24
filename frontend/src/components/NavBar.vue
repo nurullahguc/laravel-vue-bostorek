@@ -44,6 +44,7 @@ export default {
     ...mapActions(useAuthStore, ['logout']),
     logoutUser() {
       this.logout();
+      this.$router.push("/login")
     }
   }
 }

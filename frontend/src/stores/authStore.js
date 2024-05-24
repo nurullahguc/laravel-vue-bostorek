@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import axios from "axios";
+import {useToast} from "vue-toastification";
 
 export const useAuthStore = defineStore('authStore', {
     state: () => ({
@@ -31,7 +32,13 @@ export const useAuthStore = defineStore('authStore', {
         logout() {
             this.user = null;
             localStorage.removeItem("user");
-            location.reload()
+            const toast = useToast();
+            toast.success("Logout successfully!", {
+                position: "bottom-left",
+                timeout: 2000,
+                closeButton: 'button',
+                icon: true,
+            })
         }
 
     }

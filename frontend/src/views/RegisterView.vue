@@ -65,7 +65,8 @@
 
 <script>
 import {useAuthStore} from "@/stores/authStore.js";
-import {mapActions} from "pinia"
+import {mapActions} from "pinia";
+import {useToast} from "vue-toastification";
 
 export default {
   name: "RegisterView",
@@ -85,10 +86,20 @@ export default {
   methods: {
     ...mapActions(useAuthStore, ['register']),
     async handleSubmit() {
-
       try {
         await this.register(this.formData)
-        this.$router.push('/login')
+        const toast = useToast();
+        toast.success("You will be redirect to login page.", {
+          position: "top-right",
+          timeout: 2000,
+          closeButton: 'button',
+          icon: true,
+        })
+
+        setTimeout(() => {
+          this.$router.push('/login')
+        }, 2500)
+
       } catch (e) {
         console.error("Error at registration", e)
       }
@@ -112,27 +123,5 @@ export default {
 </script>
 
 <style scoped>
-.form-control {
-  border-radius: 25px;
-  height: 48px;
-}
-
-.form-control:focus {
-  box-shadow: none;
-}
-
-.btn-primary {
-  border-radius: 25px;
-  height: 48px;
-  background-color: var(--secondary-color);
-  border: 1px solid var(--secondary-color);
-}
-
-.btn-primary:hover {
-  background-color: #fff;
-  color: var(--secondary-color);
-  transition: all 0.3s ease;
-}
-
 
 </style>
