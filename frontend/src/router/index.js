@@ -1,10 +1,11 @@
 import {createRouter, createWebHistory} from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import BooksView from "@/views/BooksView.vue";
-import ContactView from "@/views/ContactView.vue";
+import DashboardView from "@/views/DashboardView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import BookDetailView from "@/views/BookDetailView.vue";
+
 
 const router = createRouter({
     history: createWebHistory(),
@@ -25,9 +26,10 @@ const router = createRouter({
             component: BookDetailView
         },
         {
-            path: '/contact',
-            component: ContactView,
-            name: 'contact'
+            path: '/dashboard',
+            component: DashboardView,
+            name: 'dashboard',
+            meta: {requiresAuth: true}
         },
         {
             path: '/register',
@@ -42,5 +44,16 @@ const router = createRouter({
     ],
     linkActiveClass: 'active-link'
 })
+
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some((url) => url.meta.requiresAuth);
+    const isLoggedIn = localStorage.getItem("user");
+
+    if (requiresAuth && !isLoggedIn) {
+        next({name: 'login'});
+    } else {
+        next();
+    }
+});
 
 export default router;

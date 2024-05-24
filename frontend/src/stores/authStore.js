@@ -5,16 +5,34 @@ export const useAuthStore = defineStore('authStore', {
     state: () => ({
         user: null
     }),
-    getters: {},
+    getters: {
+        isLoggedIn: (state) => {
+            return !!state.user;
+        },
+    },
     actions: {
         async register(newUserData) {
             try {
-                console.log("user data from store", newUserData)
                 const response = await axios.post("http://127.0.0.1:8000/api/register", newUserData);
-                console.log(response)
+                return response.data
+            } catch (error) {
+                throw error
+            }
+        },
+        async login(userData) {
+            try {
+                const response = await axios.post("http://127.0.0.1:8000/api/login", userData);
+                this.user = response.data.user
+                localStorage.setItem("user", JSON.stringify(this.user))
             } catch (error) {
                 console.error("Error at register", error)
             }
+        },
+        logout() {
+            this.user = null;
+            localStorage.removeItem("user");
+            location.reload()
         }
+
     }
 });

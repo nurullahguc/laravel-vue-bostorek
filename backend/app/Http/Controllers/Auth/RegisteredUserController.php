@@ -22,11 +22,10 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        return \response()->json(['test']);
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', Rules\Password::defaults()],
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -35,22 +34,18 @@ class RegisteredUserController extends Controller
             return response()->json($validator->getMessageBag()->toArray(), 422);
 
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        $token = Auth::user()->createToken("personal-token")->plainTextToken;
+//        event(new Registered($user));
+//        Auth::login($user);
+//        $token = Auth::user()->createToken("personal-token")->plainTextToken;
 
         return \response()->json([
+            'message' => 'User created successfully!',
             'user' => $user,
-            'token' => $token
         ]);
-
-        return response()->noContent();
     }
 }

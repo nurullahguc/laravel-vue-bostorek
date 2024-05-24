@@ -9,14 +9,17 @@
         <li class="nav-item">
           <router-link class="nav-link" to="/books">Books</router-link>
         </li>
-        <li class="nav-item">
-          <router-link class="nav-link" to="/contact">Contact Us</router-link>
+        <li class="nav-item" v-if="isLoggedIn">
+          <router-link class="nav-link" to="/dashboard">Dashboard</router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="!isLoggedIn">
           <router-link class="nav-link" to="/login">Login</router-link>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="!isLoggedIn">
           <router-link class="nav-link" to="/register">Register</router-link>
+        </li>
+        <li class="nav-item" v-if="isLoggedIn">
+          <button class="nav-link" @click="logoutUser">Logout</button>
         </li>
       </ul>
     </div>
@@ -24,11 +27,23 @@
 </template>
 
 <script>
+import {useAuthStore} from "@/stores/authStore.js";
+import {mapState, mapActions} from "pinia"
+
 export default {
   name: "NavBar",
   data() {
     return {
       brandName: 'Bostorek'
+    }
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isLoggedIn'])
+  },
+  methods: {
+    ...mapActions(useAuthStore, ['logout']),
+    logoutUser() {
+      this.logout();
     }
   }
 }

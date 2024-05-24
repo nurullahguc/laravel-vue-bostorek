@@ -6,6 +6,7 @@ import App from "@/App.vue";
 import router from "@/router/index.js";
 import {createPinia} from "pinia";
 import {useBookStore} from "@/stores/bookStore.js";
+import {useAuthStore} from "@/stores/authStore.js";
 
 // Font Awsome
 import {library} from '@fortawesome/fontawesome-svg-core'
@@ -17,6 +18,12 @@ library.add(faArrowLeft, faThumbsUp)
 
 
 const pinia = createPinia();
+const storedUser = localStorage.getItem("user")
+if (storedUser) {
+    const userData = JSON.parse(storedUser);
+    useAuthStore(pinia).user = userData
+}
+
 const bookStore = useBookStore(pinia);
 
 bookStore.fetchBooks().then(() => {
