@@ -20,7 +20,7 @@ class BookController extends Controller
 
     public function store(Request $request)
     {
-        //
+        return 'i got the post method here!';
     }
 
     public function show(Book $book)
