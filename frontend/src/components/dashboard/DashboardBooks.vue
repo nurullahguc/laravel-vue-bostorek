@@ -189,6 +189,8 @@ export default {
           closeButton: 'button',
           icon: true,
         });
+      } finally {
+        this.modal.hide();
       }
     }
   },
