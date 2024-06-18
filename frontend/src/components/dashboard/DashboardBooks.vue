@@ -39,7 +39,7 @@
                   :icon="['fas', 'trash']"
                   class="text-danger"
                   style="cursor: pointer"
-                  @click="deleteBook(book._id)"
+                  @click="deleteBook(book.id, book.title)"
               />
             </td>
           </tr>
@@ -158,21 +158,26 @@ export default {
     },
   },
   methods: {
-    ...mapActions(useBookStore, ['addNewBook', 'fetchBooksByUploader']),
-    async addBook() {
+    ...mapActions(useBookStore, [
+      'addNewBook',
+      'fetchBooksByUploader',
+      'deleteTheBook'
+    ]),
+
+    showToast(message, options) {
       const toast = useToast();
-
+      toast(message, {
+        position: "bottom-left",
+        closeButton: 'button',
+        icon: true,
+        ...options,
+      })
+    },
+    async addBook() {
       try {
-        await this.addNewBook(this.newBook)
-
+        const response = await this.addNewBook(this.newBook)
         await this.fetchBooksByUploader();
-
-        toast.success("Logout successfully!", {
-          position: "bottom-left",
-          timeout: 1500,
-          closeButton: 'button',
-          icon: true,
-        });
+        this.showToast(response.data.message, {type: 'success', timeout: 1500});
         this.modal.hide();
         this.newBook = {
           title: '',
@@ -180,19 +185,25 @@ export default {
           description: '',
           page_number: null,
         };
-
       } catch (e) {
         console.log("error at create new book!", e);
-        toast.error(e.response.data.message, {
-          position: "bottom-left",
-          timeout: 1500,
-          closeButton: 'button',
-          icon: true,
-        });
+        this.showToast(e.response.data.message, {type: 'success', timeout: 1500});
       } finally {
         this.modal.hide();
       }
-    }
+    },
+    async deleteBook(bookId, bookTitle) {
+      try {
+        await this.deleteTheBook(bookId)
+        await this.fetchBooksByUploader();
+        this.showToast(`"${bookTitle}" deleted successfully!`, {type: 'warning', timeout: 3000});
+      } catch (e) {
+        console.log("error at create new book!", e);
+        this.showToast(e.response.data.message, {type: 'error', timeout: 1500});
+      } finally {
+        this.modal.hide();
+      }
+    },
   },
   mounted() {
     this.modal = new Modal(this.$refs.addEditModal);

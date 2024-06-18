@@ -28,7 +28,7 @@ export const useBookStore = defineStore('bookStore', {
 
         async fetchBooksByUploader() {
             try {
-                const response =  await axios.get("http://127.0.0.1:8000/api/books/uploader");
+                const response = await axios.get("http://127.0.0.1:8000/api/books/uploader");
                 this.userUploadedBooks = response.data.books;
             } catch (e) {
                 console.log("error at fetching user books", e);
@@ -38,11 +38,20 @@ export const useBookStore = defineStore('bookStore', {
         async addNewBook(newBook) {
             this.isLoading = true;
             try {
-                const response = await axios.post("http://127.0.0.1:8000/api/books", newBook)
+                const response = await axios.post("http://127.0.0.1:8000/api/books", newBook);
+                return response;
             } catch (e) {
                 throw e;
             }
-
+        },
+        async deleteTheBook(bookId) {
+            this.isLoading = true;
+            try {
+                await axios.delete(`http://127.0.0.1:8000/api/books/${bookId}`);
+                this.books = this.books.filter((book) => book.id !== bookId);
+            } catch (e) {
+                throw e;
+            }
         }
     }
 })
