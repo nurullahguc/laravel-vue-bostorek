@@ -65,6 +65,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
 });
 
-Route::resource('books', BookController::class);
+Route::resource('books', BookController::class)->only([
+    'index', 'show'
+]);
 
 
