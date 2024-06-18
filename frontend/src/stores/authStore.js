@@ -28,7 +28,8 @@ export const useAuthStore = defineStore('authStore', {
                 localStorage.setItem("token", response.data.token)
                 axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
             } catch (error) {
-                console.error("Error at register", error)
+                console.error("Error at login (authStore)", error)
+                throw error;
             }
         },
         logout() {

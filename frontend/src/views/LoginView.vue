@@ -90,18 +90,31 @@ const rules = {
 const v$ = useVuelidate(rules, formData);
 
 const handleSubmit = async () => {
+
+  const toast = useToast();
+
+
   try {
     const result = await v$.value.$validate();
     await authStore.login(formData)
-    const toast = useToast();
+
     toast.success("You will be redirect to dashboard page.", {
       position: "bottom-left",
       timeout: 2000,
       closeButton: 'button',
       icon: true,
     })
+
     router.push('/dashboard')
   } catch (error) {
+
+    toast.error(error.response.data.message, {
+      position: "bottom-left",
+      timeout: 2000,
+      closeButton: 'button',
+      icon: true,
+    })
+
     console.error("Error at login: ", error);
   }
 }
