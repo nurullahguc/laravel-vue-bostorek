@@ -19,38 +19,11 @@
       <div class="tab-content py-4" id="dashboardContent">
         <div class="tab-pane fade" :class="{'show active': activeTab==='general'}" id="general-tab-pane" role="tabpanel"
              aria-labelledby="general-tab" tabindex="0">
-          <div class="row">
-            <div class="col-lg-6">
-              <h2 class="mb-4">User Information</h2>
-              <form action="">
-                <div class="mb-3">
-                  <label for="username">Username:</label>
-                  <input v-model="userInfo.username" type="text" class="form-control" id="username"
-                         :disabled="!editMode">
-                </div>
-                <div class="mb-3">
-                  <label for="email">Email:</label>
-                  <input v-model="userInfo.email" type="email" class="form-control" id="email" :disabled="!editMode">
-                </div>
-                <div class="mb-3">
-                  <label for="password">Password:</label>
-                  <input v-model="userInfo.password" type="password" class="form-control" id="password"
-                         :disabled="!editMode">
-                </div>
-                <button @click="editMode ? saveUserInformation() : toggleEditMode()"
-                        type="button" class="btn btn-primary">{{ editMode ? 'Save' : 'Edit' }}
-                </button>
-                <button @click="cancelEditMode" v-if="editMode"
-                        style="background-color: #ecc73c !important; border-color: #ecc73c !important;"
-                        type="button" class="btn btn-primary ms-3">Cancel
-                </button>
-              </form>
-            </div>
-            <div class="col-lg-6"></div>
-          </div>
+          <DashboardGeneral/>
         </div>
         <div class="tab-pane fade" :class="{'show active': activeTab === 'books'}" id="books-tab-pane" role="tabpanel"
-             aria-labelledby="books-tab" tabindex="0">{{ user }}
+             aria-labelledby="books-tab" tabindex="0">
+          <DashboardBooks/>
         </div>
       </div>
     </div>
@@ -58,66 +31,19 @@
 </template>
 
 <script>
-import {useAuthStore} from "@/stores/authStore.js";
-import {useUserStore} from "@/stores/userStore.js";
-import {mapState, mapActions} from "pinia";
-import {useToast} from "vue-toastification";
+import DashboardGeneral from "@/components/dashboard/DashboardGeneral.vue";
+import DashboardBooks from "@/components/dashboard/DashboardBooks.vue";
 
 export default {
   name: "DashboardView",
+  components: {DashboardGeneral, DashboardBooks},
+
   data() {
     return {
-      activeTab: 'general',
-      userInfo: {
-        username: '',
-        email: '',
-        password: '',
-      },
-      editMode: false,
+      activeTab: 'books',
     }
   },
-  created() {
-    this.userInfo.username = this.user.name;
-    this.userInfo.email = this.user.email;
-  },
-  computed: {
-    ...mapState(useAuthStore, ['user']),
-  },
 
-
-  methods: {
-    ...mapActions(useUserStore, ['updateUserDetails']),
-    ...mapActions(useAuthStore, ['logout']),
-    toggleEditMode() {
-      this.editMode = !this.editMode;
-    },
-    async saveUserInformation() {
-      try {
-        await this.updateUserDetails(this.userInfo);
-
-        const toast = useToast();
-        toast.success("Please login with new details.", {
-          position: "top-right",
-          timeout: 2000,
-          closeButton: 'button',
-          icon: true,
-        })
-
-        setTimeout(() => {
-          console.log("logout started!")
-          this.logout();
-        }, 2500)
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    cancelEditMode() {
-      this.editMode = false;
-      this.userInfo.username = this.user.name;
-      this.userInfo.email = this.user.email;
-      this.userInfo.password = '';
-    }
-  }
 }
 </script>
 
