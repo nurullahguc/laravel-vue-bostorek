@@ -56,7 +56,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => ['auth:sanctum', 'token_expiration']], function () {
     Route::put('user/update-user', [UserController::class, 'updateUser']);
 
     Route::resource('books', BookController::class)->only([

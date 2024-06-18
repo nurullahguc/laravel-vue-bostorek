@@ -66,7 +66,6 @@ class Kernel extends HttpKernel
             EnsureFrontendRequestsAreStateful::class,
             ThrottleRequests::class . ':api',
             SubstituteBindings::class,
-            TokenExpirationMiddleware::class,
         ],
     ];
 
@@ -88,5 +87,6 @@ class Kernel extends HttpKernel
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
+        'token_expiration' => TokenExpirationMiddleware::class,
     ];
 }
