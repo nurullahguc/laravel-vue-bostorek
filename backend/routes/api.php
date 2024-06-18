@@ -58,6 +58,11 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::put('user/update-user', [UserController::class, 'updateUser']);
+
+    Route::resource('books', BookController::class)->only([
+        'store', 'update', 'destroy'
+    ]);
+
 });
 
 Route::resource('books', BookController::class);
