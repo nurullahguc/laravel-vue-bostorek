@@ -21,32 +21,32 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-          <td>Gülün Adı</td>
-          <td>Umberto Eco</td>
-          <td style="max-width: 250px">
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-            accusantium doloremque laudantium.
-          </td>
-          <td>217</td>
-          <td class="text-center">
-            <font-awesome-icon
-                :icon="['far', 'pen-to-square']"
-                class="text-warning"
-                style="cursor: pointer"
-            />
-          </td>
-          <td class="text-center">
-            <font-awesome-icon
-                :icon="['fas', 'trash']"
-                class="text-danger"
-                style="cursor: pointer"
-                @click="deleteBook(book._id)"
-            />
-          </td>
-        </tr>
+        <TransitionGroup name="list">
+          <tr v-for="book in userBooks" :key="book.id">
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td style="max-width: 250px">{{ book.description }}</td>
+            <td>{{ book.page_number }}</td>
+            <td class="text-center">
+              <font-awesome-icon
+                  :icon="['far', 'pen-to-square']"
+                  class="text-warning"
+                  style="cursor: pointer"
+              />
+            </td>
+            <td class="text-center">
+              <font-awesome-icon
+                  :icon="['fas', 'trash']"
+                  class="text-danger"
+                  style="cursor: pointer"
+                  @click="deleteBook(book._id)"
+              />
+            </td>
+          </tr>
+        </TransitionGroup>
         </tbody>
       </table>
+
     </div>
   </div>
 
@@ -70,6 +70,7 @@
                 id="title"
                 name="title"
                 required
+                v-model="newBook.title"
             />
           </div>
           <div class="col mb-3">
@@ -83,6 +84,7 @@
                 id="author"
                 name="author"
                 required
+                v-model="newBook.author"
             />
           </div>
           <div class="col mb-3">
@@ -96,6 +98,7 @@
                 class="form-control"
                 cols="30"
                 rows="10"
+                v-model="newBook.description"
             ></textarea>
           </div>
           <div class="col mb-3">
@@ -109,13 +112,14 @@
                 id="numOfPages"
                 name="numOfPages"
                 required
+                v-model="newBook.page_number"
             />
           </div>
           <div class="text-end mb-4 d-flex align-items-center justify-content-between">
             <button type="button" @click="modal.hide()" class="btn btn-outline-secondary">
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save</button>
+            <button @click="addBook" type="button" class="btn btn-primary">Save</button>
           </div>
         </div>
       </div>
@@ -125,6 +129,9 @@
 
 <script>
 import {Modal} from "bootstrap";
+import {useBookStore} from "@/stores/bookStore.js";
+import {mapActions, mapState} from "pinia";
+import {useToast} from "vue-toastification";
 
 export default {
   name: 'DashboardBooks',
@@ -134,10 +141,62 @@ export default {
   data() {
     return {
       modal: null,
+      newBook: {
+        title: '',
+        author: '',
+        description: '',
+        page_number: null,
+      }
+    }
+  },
+  computed: {
+    ...mapState(useBookStore, ['userUploadedBooks']),
+    userBooks() {
+      return this.userUploadedBooks
+          .slice()
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    },
+  },
+  methods: {
+    ...mapActions(useBookStore, ['addNewBook', 'fetchBooksByUploader']),
+    async addBook() {
+      const toast = useToast();
+
+      try {
+        await this.addNewBook(this.newBook)
+
+        await this.fetchBooksByUploader();
+
+        toast.success("Logout successfully!", {
+          position: "bottom-left",
+          timeout: 1500,
+          closeButton: 'button',
+          icon: true,
+        });
+        this.modal.hide();
+        this.newBook = {
+          title: '',
+          author: '',
+          description: '',
+          page_number: null,
+        };
+
+      } catch (e) {
+        console.log("error at create new book!", e);
+        toast.error(e.response.data.message, {
+          position: "bottom-left",
+          timeout: 1500,
+          closeButton: 'button',
+          icon: true,
+        });
+      }
     }
   },
   mounted() {
-    this.modal = new Modal(this.$refs.addEditModal)
+    this.modal = new Modal(this.$refs.addEditModal);
+  },
+  created() {
+    this.fetchBooksByUploader();
   }
 }
 </script>
@@ -148,6 +207,18 @@ export default {
   height: 48px;
   margin-right: 20px;
   min-width: 120px;
-
 }
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 1s ease;
+}
+
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(300px);
+}
+
 </style>
