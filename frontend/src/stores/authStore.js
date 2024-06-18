@@ -25,6 +25,8 @@ export const useAuthStore = defineStore('authStore', {
                 const response = await axios.post("http://127.0.0.1:8000/api/login", userData);
                 this.user = response.data.user
                 localStorage.setItem("user", JSON.stringify(this.user))
+                localStorage.setItem("token", response.data.token)
+                axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
             } catch (error) {
                 console.error("Error at register", error)
             }
@@ -32,13 +34,14 @@ export const useAuthStore = defineStore('authStore', {
         logout() {
             this.user = null;
             localStorage.removeItem("user");
+            localStorage.removeItem("token");
             const toast = useToast();
             toast.success("Logout successfully!", {
                 position: "bottom-left",
                 timeout: 2000,
                 closeButton: 'button',
                 icon: true,
-            })
+            });
         }
 
     }

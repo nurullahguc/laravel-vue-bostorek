@@ -9,6 +9,7 @@ import {useBookStore} from "@/stores/bookStore.js";
 import {useAuthStore} from "@/stores/authStore.js";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css"
+import axios from "axios";
 
 
 // Import the CSS or use your own!
@@ -22,10 +23,15 @@ library.add(faArrowLeft, faThumbsUp)
 
 
 const pinia = createPinia();
+
 const storedUser = localStorage.getItem("user")
+const token = localStorage.getItem("token")
+
 if (storedUser) {
     const userData = JSON.parse(storedUser);
-    useAuthStore(pinia).user = userData
+    const authStore = useAuthStore(pinia);
+    authStore.user = userData;
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
 
 const bookStore = useBookStore(pinia);
