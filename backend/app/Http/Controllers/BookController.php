@@ -20,6 +20,13 @@ class BookController extends Controller
         //
     }
 
+    public function uploader()
+    {
+        $books = Book::where('created_by', Auth::id())->get();
+
+        return response()->json(['status' => 200, 'books' => $books], 200);
+    }
+
     public function store(Request $request)
     {
         $rules = [
@@ -35,13 +42,15 @@ class BookController extends Controller
 
 
         $request['created_by'] = Auth::id();
+        $request['rating'] = 0;
 
+        $create = Book::create($request->all());
 
-        return $request;
-
-
-        return $request;
-
+        return response()->json([
+            'status' => 200,
+            'message' => 'Book created successfully!',
+            'book' => $create
+        ]);
     }
 
     public function show(Book $book)

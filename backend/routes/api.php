@@ -63,6 +63,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         'store', 'update', 'destroy'
     ]);
 
+    Route::get('books/uploader', [BookController::class, 'uploader']);
+
 });
 
 Route::resource('books', BookController::class)->only([
