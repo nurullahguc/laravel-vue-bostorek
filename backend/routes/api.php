@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -65,9 +66,16 @@ Route::group(['middleware' => ['auth:sanctum', 'token_expiration']], function ()
 
     Route::get('books/uploader', [BookController::class, 'uploader']);
 
+    Route::resource('comments', CommentController::class)->only([
+        'store', 'update', 'destroy'
+    ]);
 });
 
 Route::resource('books', BookController::class)->only([
+    'index', 'show'
+]);
+
+Route::resource('comments', CommentController::class)->only([
     'index', 'show'
 ]);
 
