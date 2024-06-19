@@ -4,6 +4,7 @@ import axios from "axios"
 export const useCommentStore = defineStore('commentStore', {
     state: () => ({
         comments: [],
+        commentsForBook: [],
     }),
     actions: {
         async addNewComment(newComment) {
@@ -16,9 +17,17 @@ export const useCommentStore = defineStore('commentStore', {
                 if (e.response && e.response.data) {
                     throw e.response.data;
                 } else {
-                    throw { message: "An unexpected error occurred." };
+                    throw {message: "An unexpected error occurred."};
                 }
             }
-        }
+        },
+        async fetchCommentsForBook(bookId) {
+            try {
+                const response = await axios.get(`http://127.0.0.1:8000/api/comments-for-book/${bookId}`);
+                this.commentsForBook = response.data.comments;
+            } catch (e) {
+                console.log("error at fetching comments for book", e);
+            }
+        },
     }
 })

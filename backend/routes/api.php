@@ -69,6 +69,7 @@ Route::group(['middleware' => ['auth:sanctum', 'token_expiration']], function ()
     Route::resource('comments', CommentController::class)->only([
         'store', 'update', 'destroy'
     ]);
+
 });
 
 Route::resource('books', BookController::class)->only([
@@ -79,4 +80,4 @@ Route::resource('comments', CommentController::class)->only([
     'index', 'show'
 ]);
 
-
+Route::get('comments-for-book/{id}', [CommentController::class, 'comment4Book']);

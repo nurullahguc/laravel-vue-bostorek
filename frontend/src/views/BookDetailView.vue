@@ -64,14 +64,16 @@
         </div>
       </div>
     </div>
-    <hr/>
+    <hr v-if="isLoggedIn"/>
     <div className="row mt-3">
       <div className="col-md-12">
         <div className="box">
-          <h3 style="color: var(--primary-color)">Comment The Book</h3>
-          <form @submit.prevent="addComment()">
-            <!-- Comment Text Area -->
-            <div className="mb-3">
+
+          <div v-if="isLoggedIn">
+            <h3 style="color: var(--primary-color)">Comment The Book</h3>
+            <form @submit.prevent="addComment()">
+              <!-- Comment Text Area -->
+              <div className="mb-3">
               <textarea
                   id="comment"
                   className="form-control"
@@ -80,11 +82,16 @@
 
                   v-model="commentContent"
               ></textarea>
-            </div>
+              </div>
 
-            <!-- Submit Button -->
-            <button type="submit" className="btn btn-primary">Comment</button>
-          </form>
+              <!-- Submit Button -->
+              <button type="submit" className="btn btn-primary">Comment</button>
+            </form>
+          </div>
+          <router-link v-else to="/login">
+            <p style="color: var(--secondary-color)">Login to leave a comment.</p>
+          </router-link>
+
         </div>
       </div>
     </div>
@@ -94,18 +101,14 @@
         <div className="box">
           <h3 style="color: var(--primary-color)">Comments</h3>
           <div>
-            <div className="card mb-4">
+            <div className="card mb-4"
+                 v-for="comment in commentsForBook" :key="comment.id">
               <div className="card-body">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
+                <p>{{ comment.content }}</p>
 
                 <div className="d-flex justify-content-between">
                   <div className="d-flex flex-row align-items-center">
-                    <p className="small mb-0 ms-2">Username</p>
+                    <p className="small mb-0 ms-2">{{ comment.user.name }}</p>
                   </div>
                   <div
                       className="d-flex flex-row align-items-center"
@@ -118,7 +121,8 @@
                 </div>
               </div>
             </div>
-            <div className="card mb-4">
+
+            <div v-if="false" className="card mb-4">
               <div className="card-body">
                 <p>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
@@ -158,6 +162,7 @@ import {useBookStore} from '@/stores/bookStore.js';
 import {useCommentStore} from '@/stores/commentStore.js';
 import {mapState, mapActions} from 'pinia';
 import {useToast} from "vue-toastification";
+import {useAuthStore} from "@/stores/authStore.js";
 
 export default {
   name: 'BookDetailView',
@@ -173,9 +178,13 @@ export default {
   },
   created() {
     this.selectBook();
+    this.fetchCommentsForBook(this.$route.params.id);
   },
   methods: {
-    ...mapActions(useCommentStore, ['addNewComment']),
+    ...mapActions(useCommentStore, [
+      'addNewComment',
+      'fetchCommentsForBook'
+    ]),
     async addComment() {
       const toast = useToast();
       try {
@@ -186,6 +195,10 @@ export default {
           bookId,
           content,
         });
+
+        this.commentContent = '';
+
+        this.fetchCommentsForBook(this.$route.params.id);
 
         toast.success(response.message, {
           position: "bottom-left",
@@ -227,7 +240,15 @@ export default {
     },
   },
   computed: {
-    ...mapState(useBookStore, ['selectedBook']),
+    ...mapState(useBookStore, [
+      'selectedBook',
+    ]),
+    ...mapState(useAuthStore, [
+      'isLoggedIn',
+    ]),
+    ...mapState(useCommentStore, [
+      'commentsForBook',
+    ]),
   },
 };
 </script>

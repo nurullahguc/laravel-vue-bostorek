@@ -33,7 +33,7 @@ class CommentController extends Controller
         $create = Comment::create([
             'book_id' => $request->bookId,
             'posted_by' => Auth::id(),
-            'content' => $request->content,
+            'content' => $request->input('content'),
         ]);
 
         return response()->json([
@@ -41,6 +41,17 @@ class CommentController extends Controller
             'message' => 'Comment created successfully!',
             'comment' => $create
         ], 200);
+    }
+
+
+    public function comment4Book($id)
+    {
+        $comments = Comment::with('user')
+            ->where('book_id', $id)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json(['status' => 200, 'comments' => $comments], 200);
     }
 
     public function show(Comment $comment)
