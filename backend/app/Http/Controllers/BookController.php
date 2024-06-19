@@ -66,7 +66,13 @@ class BookController extends Controller
 
     public function update(Request $request, Book $book)
     {
-        //
+        $book->update($request->all());
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Book updated successfully!',
+            'book' => $book
+        ], 200);
     }
 
     public function destroy(Book $book)
