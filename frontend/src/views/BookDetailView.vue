@@ -69,7 +69,7 @@
       <div className="col-md-12">
         <div className="box">
           <h3 style="color: var(--primary-color)">Comment The Book</h3>
-          <form>
+          <form @submit.prevent="addComment()">
             <!-- Comment Text Area -->
             <div className="mb-3">
               <textarea
@@ -77,7 +77,8 @@
                   className="form-control"
                   rows="4"
                   placeholder="Enter your comment"
-                  required
+
+                  v-model="commentContent"
               ></textarea>
             </div>
 
@@ -154,7 +155,9 @@
 <script>
 import SectionHeader from '@/components/SectionHeader.vue';
 import {useBookStore} from '@/stores/bookStore.js';
-import {mapState} from 'pinia';
+import {useCommentStore} from '@/stores/commentStore.js';
+import {mapState, mapActions} from 'pinia';
+import {useToast} from "vue-toastification";
 
 export default {
   name: 'BookDetailView',
@@ -165,12 +168,55 @@ export default {
     return {
       book: null,
       loading: true,
+      commentContent: "",
     };
   },
   created() {
     this.selectBook();
   },
   methods: {
+    ...mapActions(useCommentStore, ['addNewComment']),
+    async addComment() {
+      const toast = useToast();
+      try {
+        const bookId = this.$route.params.id;
+        const content = this.commentContent;
+
+        const response = await this.addNewComment({
+          bookId,
+          content,
+        });
+
+        toast.success(response.message, {
+          position: "bottom-left",
+          timeout: 2000,
+          closeButton: 'button',
+          icon: true,
+        })
+
+
+      } catch (error) {
+        if (error.errors) {
+          for (const key in error.errors) {
+            if (error.errors.hasOwnProperty(key)) {
+              toast.error(error.errors[key][0], {
+                position: "bottom-left",
+                timeout: 3000,
+                closeButton: 'button',
+                icon: true,
+              });
+            }
+          }
+        } else {
+          toast.error(error.message, {
+            position: "bottom-left",
+            timeout: 2000,
+            closeButton: 'button',
+            icon: true,
+          });
+        }
+      }
+    },
     goToBackBooks() {
       this.$router.push({name: 'books'});
     },
