@@ -11,7 +11,18 @@ class CommentController extends Controller
 {
     public function index()
     {
-        //
+        $comments = Comment::with([
+            'user',
+            'book'
+        ])
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => 200,
+            'comments' => $comments,
+        ], 200);
+
     }
 
     public function create()

@@ -11,14 +11,13 @@
       <p class="card-text">{{ truncatedText }}</p>
       <div class="d-flex justify-content-between align-items-center">
         <a href="#">Read More</a>
-        <p style="background-color: var(--primary-color);" class="py-1 px-2  text-white badge mb-0">{{
-            book.uploadDate
-          }}</p>
+        <p style="background-color: var(--primary-color);" class="py-1 px-2  text-white badge mb-0">
+          {{book.created_at}}</p>
       </div>
     </div>
     <span :class="ratingBadgeClass"
           class="position-absolute rating-badge top-0 start-100 translate-middle p-2 text-light rounded-circle border border-2 border-light">
-      {{ book.rating }}
+      {{ avarageRating }}
     </span>
   </div>
 </template>
@@ -33,10 +32,23 @@ export default {
     }
   },
   computed: {
+    avarageRating() {
+      if (this.book.ratings.length > 0) {
+        const totalRating = this.book.ratings.reduce((sum, rating) => sum + rating.rate, 0);
+
+        return (totalRating / this.book.ratings.length).toFixed(1);
+
+      } else {
+        return "-";
+      }
+    },
     ratingBadgeClass() {
-      if (this.book.rating > 7) {
+
+      console.log("this.book", this.book);
+
+      if (this.avarageRating > 7 || this.avarageRating === "-") {
         return 'bg-success';
-      } else if (this.book.rating > 4) {
+      } else if (this.avarageRating > 4) {
         return 'bg-warning';
       } else {
         return 'bg-danger';

@@ -7,6 +7,7 @@ import router from "@/router/index.js";
 import {createPinia} from "pinia";
 import {useBookStore} from "@/stores/bookStore.js";
 import {useAuthStore} from "@/stores/authStore.js";
+import {useCommentStore} from "@/stores/commentStore.js";
 import Toast, {useToast} from "vue-toastification";
 import "vue-toastification/dist/index.css"
 import axios from "axios";
@@ -60,7 +61,16 @@ if (storedUser) {
 }
 
 const bookStore = useBookStore(pinia);
+const commentStore = useCommentStore();
 
-bookStore.fetchBooks().then(() => {
-    app.mount('#app');
-});
+const init = async () => {
+    try {
+        await Promise.all([commentStore.fetchComments(), bookStore.fetchBooks()]);
+
+        app.mount('#app');
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+init();

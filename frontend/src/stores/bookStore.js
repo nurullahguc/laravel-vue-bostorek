@@ -1,5 +1,7 @@
 import {defineStore} from "pinia";
 import axios from "axios"
+import {useRatingStore} from "@/stores/ratingStore.js";
+
 
 export const useBookStore = defineStore('bookStore', {
     state: () => ({
@@ -10,7 +12,21 @@ export const useBookStore = defineStore('bookStore', {
     getters: {
         selectedBook: (state) => {
             return (id) => state.books.find((book) => book.id == id)
+        },
+        latest4Books: (state) => {
+            return state.books.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 4);
+        },
+        rated4Books: (state) => {
+            const sortedBooks = [...state.books].sort((a, b) => {
+                const averageRatingA = a.ratings.reduce((sum, rating) => sum + rating.rate, 0) / (a.ratings.length || 1);
+                const averageRatingB = b.ratings.reduce((sum, rating) => sum + rating.rate, 0) / (b.ratings.length || 1);
+
+                return averageRatingB - averageRatingA;
+            });
+
+            return sortedBooks.slice(0, 4);
         }
+
     },
     actions: {
         async fetchBooks() {
@@ -19,12 +35,31 @@ export const useBookStore = defineStore('bookStore', {
                 await new Promise((resolve) => setTimeout(resolve, 15));
                 const response = await axios.get("http://127.0.0.1:8000/api/books");
                 this.books = response.data.books;
+
+                // await this.fetchRatingsForBooks();
             } catch (e) {
                 console.error("Error at fetching books. Err: ", e)
             } finally {
                 this.isLoading = false;
             }
         },
+
+        // async fetchRatingsForBooks() {
+        //     const ratingStore = useRatingStore();
+        //
+        //     await Promise.all(
+        //         this.books.map(async (book) => {
+        //           try {
+        //               await ratingStore.fetchRatingForBook(book.id);
+        //
+        //               book.ratings = ratingStore.ratingsForBook;
+        //           } catch(error){
+        //               console.log("error at fetchRatingsForBooks", error);
+        //           }
+        //         })
+        //     )
+        //
+        // },
 
         async fetchBooksByUploader() {
             try {

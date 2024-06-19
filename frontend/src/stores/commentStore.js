@@ -8,10 +8,19 @@ export const useCommentStore = defineStore('commentStore', {
         commentsByUser: [],
     }),
     actions: {
+        async fetchComments() {
+            try {
+                const response = await axios.get("http://127.0.0.1:8000/api/comments");
+                console.log(response.data.comments);
+                this.comments = response.data.comments;
+            } catch (e) {
+                console.error("Error at fetching comments. Err: ", e)
+            }
+        },
         async addNewComment(newComment) {
             try {
                 const response = await axios.post("http://127.0.0.1:8000/api/comments", newComment);
-                this.comments.push(response.data.comment);
+                this.fetchComments();
                 return response.data;
             } catch (e) {
                 console.error("Error at adding new comment. Err: ", e);

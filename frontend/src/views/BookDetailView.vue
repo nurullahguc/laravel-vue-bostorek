@@ -197,7 +197,6 @@ export default {
   created() {
     this.selectBook();
     this.fetchCommentsForBook(this.$route.params.id);
-    this.fetchRatingForBook(this.$route.params.id);
   },
   methods: {
     ...mapActions(useCommentStore, [

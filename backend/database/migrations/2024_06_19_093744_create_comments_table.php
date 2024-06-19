@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('content');
             $table->integer('book_id');
+            $table->json('upvotes');
             $table->integer('posted_by');
             $table->timestamps();
         });

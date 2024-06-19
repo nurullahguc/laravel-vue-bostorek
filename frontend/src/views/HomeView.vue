@@ -48,13 +48,43 @@
                     </div>
                     <div class="col-md-8 d-flex flex-column justify-content-center">
                       <p>{{ book.description }}</p>
-                      <div class="badge align-self-start" style="background-color: var(--secondary-color)">
-                        {{ book.rating }}
-                      </div>
+
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="py-5" style="background-color: #f5f6f9">
+    <div class="container">
+      <SectionHeader
+          title="Latest Comments"
+          text="We declare long prop names using camelCase because this avoids"
+      />
+
+      <div class="row d-flex justify-content-center">
+        <div class="col-md-6" v-for="comment in prepared4Comments" :key="comment.id">
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex flex-start align-items-center">
+                <img
+                    class="rounded-circle shadow-1-strong me-3"
+                    src="../assets/images/c1.jpg"
+                    alt="avatar"
+                    width="60"
+                    height="60"
+                />
+                <div>
+                  <h6 class="fw-bold text-primary mb-1">{{ comment.book.title }}</h6>
+                  <p class="text-muted small mb-0">{{ comment.user.name }} - {{ comment.created_at }}</p>
+                </div>
+              </div>
+
+              <p class="mt-3 mb-4 pb-2">{{ comment.content }}</p>
             </div>
           </div>
         </div>
@@ -70,6 +100,7 @@ import hero_2 from "@/assets/images/hero_2.jpg";
 import hero_3 from "@/assets/images/hero_3.jpg";
 import SectionHeader from "@/components/SectionHeader.vue";
 import {useBookStore} from "@/stores/bookStore.js";
+import {useCommentStore} from "@/stores/commentStore.js";
 import {mapState} from "pinia"
 
 export default {
@@ -115,15 +146,22 @@ export default {
     }
   },
   computed: {
-    ...mapState(useBookStore, ['books', 'isLoading']),
+    ...mapState(useBookStore, ['books', 'isLoading', 'latest4Books', 'rated4Books']),
+    ...mapState(useCommentStore, ['comments']),
     filteredBooks() {
       const copiedBooks = [...this.books];
       if (this.selectedFilter === 'latest') {
-        return copiedBooks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 4);
+        return this.latest4Books
       } else if (this.selectedFilter === 'best') {
-        return copiedBooks.sort((a, b) => b.rating - a.rating).slice(0, 4);
+        return this.rated4Books;
       }
+    },
+    prepared4Comments() {
+      return this.comments
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 4);
     }
+
   }
 }
 </script>
