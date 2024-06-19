@@ -1,26 +1,24 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@/assets/styles.css'
 
-import { createApp } from "vue";
+import {createApp} from "vue";
 import App from "@/App.vue";
 import router from "@/router/index.js";
-import { createPinia } from "pinia";
-import { useBookStore } from "@/stores/bookStore.js";
-import { useAuthStore } from "@/stores/authStore.js";
-import Toast, { useToast } from "vue-toastification";
+import {createPinia} from "pinia";
+import {useBookStore} from "@/stores/bookStore.js";
+import {useAuthStore} from "@/stores/authStore.js";
+import Toast, {useToast} from "vue-toastification";
 import "vue-toastification/dist/index.css"
 import axios from "axios";
 
 // Import the CSS or use your own!
 // Font Awesome
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { faThumbsUp } from "@fortawesome/free-regular-svg-icons";
-import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+import {faThumbsUp, faArrowLeft, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faThumbsUp as farThumbsUp, faPenToSquare} from "@fortawesome/free-regular-svg-icons";
 
-library.add(faArrowLeft, faThumbsUp, faPenToSquare, faTrash)
+library.add(faArrowLeft, faThumbsUp, farThumbsUp, faPenToSquare, faTrash)
 
 const app = createApp(App);
 const pinia = createPinia();

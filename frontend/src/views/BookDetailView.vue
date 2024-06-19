@@ -1,155 +1,210 @@
 <template>
-  <section>
-    <div v-if="!loading" class="container">
-      <SectionHeader :title="book.title" :text="book.author"/>
-      <font-awesome-icon icon="arrow-left" size="2xl" class="mb-2" style="cursor:pointer;" @click="goToBackBook"/>
-      <div class="row mb-4">
-        <div class="col-lg-6">
-          <img src="../../template/images/b_detail.jpg" alt="" class="card-img-top">
+  <div className="container">
+    <SectionHeader :title="book.title" :text="book.author"/>
+    <div className="d-flex">
+      <font-awesome-icon
+          icon="arrow-left"
+          size="xl"
+          className="mb-2"
+          style="cursor: pointer; color: var(--secondary-color)"
+          @click="goToBackBooks"
+      />
+    </div>
+    <div className="row">
+      <div className="col-md-6">
+        <div className="image-box">
+          <img className="img-fluid" src="../../template/images/b_detail.jpg"/>
         </div>
-        <div class="col-lg-6 details-wrapper">
-          <p class="lead description">{{ book.description }}</p>
-          <div class="mb-4">
-            <div class="row border-bottom pb-2">
-              <div class="col-lg-6">
-                <strong>Page</strong>
-              </div>
-              <div class="col-lg-6">{{ book.page_number }}</div>
-            </div>
-            <div class="row border-bottom pb-2">
-              <div class="col-lg-6">
-                <strong>Category</strong>
-              </div>
-              <div class="col-lg-6">Fiction</div>
-            </div>
-            <div class="row border-bottom pb-2">
-              <div class="col-lg-6">
-                <strong>Rating</strong>
-              </div>
-              <div class="col-lg-6">{{ book.rating }}</div>
-            </div>
-            <div class="row border-bottom pb-2">
-              <div class="col-lg-6">
-                <strong>Upload Date</strong>
-              </div>
-              <div class="col-lg-6">{{ book.created_at }}</div>
-            </div>
+      </div>
+      <div className="col-md-6">
+        <div className="d-flex flex-column h-100 justify-content-between">
+          <div className="mb-3">
+            <p>
+              {{ book.description }}
+            </p>
           </div>
-          <div class="comments-section">
-            <h3 class="display-6">Comments</h3>
-            <div class="card mb-4">
-              <div class="card-body">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, officiis.</p>
-                <div class="d-flex justify-content-between">
-                  <p class="fw-bold fst-italic">John Doe</p>
-                  <div class="d-flex align-items-center">
-                    <font-awesome-icon :icon="['far', 'thumbs-up']"/>
-                    <p class="ps-2 mb-0"><strong>8</strong></p>
-                  </div>
-                </div>
-              </div>
+          <div className="d-flex flex-column">
+            <div className="row border-bottom pb-2">
+              <div className="col-lg-6"><strong>Page</strong></div>
+              <div className="col-lg-6">{{ book.pageNumber }}</div>
             </div>
-            <div class="card mb-4">
-              <div class="card-body">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, officiis.</p>
-                <div class="d-flex justify-content-between">
-                  <p class="fw-bold fst-italic">John Doe</p>
-                  <div class="d-flex align-items-center">
-                    <font-awesome-icon :icon="['far', 'thumbs-up']"/>
-                    <p class="ps-2 mb-0"><strong>8</strong></p>
-                  </div>
-                </div>
-              </div>
+            <div className="row border-bottom pb-2">
+              <div className="col-lg-6"><strong>Rating</strong></div>
+              <div className="col-lg-6">8.2 - (23 rates)</div>
             </div>
-            <div class="card mb-4">
-              <div class="card-body">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, officiis.</p>
-                <div class="d-flex justify-content-between">
-                  <p class="fw-bold fst-italic">John Doe</p>
-                  <div class="d-flex align-items-center">
-                    <font-awesome-icon :icon="['far', 'thumbs-up']"/>
-                    <p class="ps-2 mb-0"><strong>8</strong></p>
-                  </div>
-                </div>
-              </div>
+            <div className="row border-bottom pb-2">
+              <div className="col-lg-6"><strong>Upload Date</strong></div>
+              <div className="col-lg-6">{{ book.updatedAt }}</div>
             </div>
-            <div class="card mb-4">
-              <div class="card-body">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, officiis.</p>
-                <div class="d-flex justify-content-between">
-                  <p class="fw-bold fst-italic">John Doe</p>
-                  <div class="d-flex align-items-center">
-                    <font-awesome-icon :icon="['far', 'thumbs-up']"/>
-                    <p class="ps-2 mb-0"><strong>8</strong></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
     </div>
-    <div class="container" v-else>
-      <h1 class="text-primary text-center">Loading</h1>
+    <div className="row mt-3">
+      <div className="col-md-6">
+        <div className="box">
+          <h3 style="color: var(--primary-color)">Rate The Book</h3>
+          <form>
+            <!-- Rating Input -->
+            <div className="mb-3">
+              <input
+                  type="number"
+                  id="rating"
+                  className="form-control w-50"
+                  min="1"
+                  max="10"
+                  placeholder="Rate (1-10)"
+                  required
+              />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" className="btn btn-primary">Rate</button>
+          </form>
+        </div>
+      </div>
     </div>
-  </section>
+    <hr/>
+    <div className="row mt-3">
+      <div className="col-md-12">
+        <div className="box">
+          <h3 style="color: var(--primary-color)">Comment The Book</h3>
+          <form>
+            <!-- Comment Text Area -->
+            <div className="mb-3">
+              <textarea
+                  id="comment"
+                  className="form-control"
+                  rows="4"
+                  placeholder="Enter your comment"
+                  required
+              ></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" className="btn btn-primary">Comment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div className="row my-3">
+      <div className="col-md-12">
+        <div className="box">
+          <h3 style="color: var(--primary-color)">Comments</h3>
+          <div>
+            <div className="card mb-4">
+              <div className="card-body">
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex flex-row align-items-center">
+                    <p className="small mb-0 ms-2">Username</p>
+                  </div>
+                  <div
+                      className="d-flex flex-row align-items-center"
+                      style="gap: 10px"
+                  >
+                    <p className="small text-muted mb-0">Upvote?</p>
+                    <font-awesome-icon :icon="['far', 'thumbs-up']"/>
+                    <p className="small text-muted mb-0">3</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="card mb-4">
+              <div className="card-body">
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex flex-row align-items-center">
+                    <p className="small mb-0 ms-2">Username</p>
+                  </div>
+                  <div
+                      className="d-flex flex-row align-items-center"
+                      style="gap: 10px"
+                  >
+                    <p className="small mb-0">Upvoted</p>
+                    <font-awesome-icon
+                        :icon="['fas', 'thumbs-up']"
+                        style="color: var(--secondary-color)"
+                    />
+                    <p className="small text-muted mb-0">4</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import SectionHeader from "@/components/SectionHeader.vue";
-import {useBookStore} from "@/stores/bookStore.js";
-import {mapState} from "pinia";
+import SectionHeader from '@/components/SectionHeader.vue';
+import {useBookStore} from '@/stores/bookStore.js';
+import {mapState} from 'pinia';
 
 export default {
-  name: "BookDetailView",
+  name: 'BookDetailView',
   components: {
-    SectionHeader
+    SectionHeader,
   },
   data() {
     return {
       book: null,
-      loading: true
-    }
+      loading: true,
+    };
   },
   created() {
-    this.selectBook()
+    this.selectBook();
   },
   methods: {
-    goToBackBook() {
-      this.$router.push({name: 'books'})
+    goToBackBooks() {
+      this.$router.push({name: 'books'});
     },
     selectBook() {
       const bookId = this.$route.params.id;
-      this.book = this.selectedBook(bookId)
-      this.loading = false
-    }
+      this.book = this.selectedBook(bookId);
+      this.loading = false;
+    },
   },
   computed: {
-    ...mapState(useBookStore, {
-      selectedBook: (state) => state.selectedBook
-    })
-  }
-}
+    ...mapState(useBookStore, ['selectedBook']),
+  },
+};
 </script>
 
 <style scoped>
-
-.details-wrapper {
-  max-height: 740px;
-  display: flex;
-  flex-direction: column;
+.image-box {
+  height: 300px;
+  overflow: hidden;
 }
 
-.comments-section {
-  flex-grow: 1;
-  overflow-y: auto;
+.image-box img {
+  width: 100% !important;
 }
 
-.description {
-  min-height: 150px;
-  max-height: 250px;
-  overflow-y: auto;
+.btn-primary {
+  height: 36px;
+  min-width: 120px;
+  border-radius: 16px;
 }
 
+.box {
+  border: 1px solid #e2e3e5;
+  border-radius: 10px;
+  padding: 20px;
+}
 </style>

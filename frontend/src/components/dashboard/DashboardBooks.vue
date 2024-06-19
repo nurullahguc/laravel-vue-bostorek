@@ -22,7 +22,7 @@
         </thead>
         <tbody>
         <TransitionGroup name="list">
-          <tr v-for="book in userBooks" :key="book.id">
+          <tr v-for="book in paginatedBooks" :key="book.id">
             <td>{{ book.title }}</td>
             <td>{{ book.author }}</td>
             <td style="max-width: 250px">{{ book.description }}</td>
@@ -49,6 +49,10 @@
       </table>
 
     </div>
+  </div>
+
+  <div class="row">
+    <PaginationWidget :currentPage="currentPage" :totalPages="totalPages" @page-changed="updatePage"/>
   </div>
 
   <!-- Modal -->
@@ -98,7 +102,7 @@
                 id="description"
                 class="form-control"
                 cols="30"
-                rows="10"
+                rows="4"
                 v-model="bookData.description"
             ></textarea>
           </div>
@@ -133,11 +137,13 @@ import {Modal} from "bootstrap";
 import {useBookStore} from "@/stores/bookStore.js";
 import {mapActions, mapState} from "pinia";
 import {useToast} from "vue-toastification";
+import PaginationWidget from "@/components/widgets/PaginationWidget.vue";
 
 export default {
   name: 'DashboardBooks',
   components: {
-    Modal
+    Modal,
+    PaginationWidget,
   },
   data() {
     return {
@@ -150,6 +156,8 @@ export default {
         page_number: null,
       },
       editedBookId: null,
+      currentPage: 1,
+      itemsPerPage: 5,
     }
   },
   computed: {
@@ -159,6 +167,14 @@ export default {
           .slice()
           .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     },
+    totalPages() {
+      return Math.ceil(this.userBooks.length / this.itemsPerPage)
+    },
+    paginatedBooks() {
+      const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+      const endIndex = startIndex + this.itemsPerPage;
+      return this.userBooks.slice(startIndex, endIndex);
+    }
   },
   methods: {
     ...mapActions(useBookStore, [
@@ -167,6 +183,9 @@ export default {
       'deleteTheBook',
       'editTheBook',
     ]),
+    updatePage(page) {
+      this.currentPage = page
+    },
     saveBook() {
       if (this.modalTitle === 'Add Book') {
         this.addBook();
@@ -208,6 +227,7 @@ export default {
     async addBook() {
       try {
         const response = await this.addNewBook(this.bookData)
+        this.currentPage = 1;
         await this.fetchBooksByUploader();
         this.showToast(response.data.message, {type: 'success', timeout: 1500});
         this.modal.hide();
