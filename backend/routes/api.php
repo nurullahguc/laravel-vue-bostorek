@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -72,6 +73,10 @@ Route::group(['middleware' => ['auth:sanctum', 'token_expiration']], function ()
 
     Route::get('comments-for-user', [CommentController::class, 'comment4User']);
 
+    Route::resource('ratings', RatingController::class)->only([
+        'store', 'update', 'destroy'
+    ]);
+
 
 });
 
@@ -84,3 +89,10 @@ Route::resource('comments', CommentController::class)->only([
 ]);
 
 Route::get('comments-for-book/{id}', [CommentController::class, 'comment4Book']);
+
+
+Route::resource('ratings', RatingController::class)->only([
+    'index', 'show'
+]);
+
+Route::get('ratings-for-book/{id}', [RatingController::class, 'raitings4Book']);

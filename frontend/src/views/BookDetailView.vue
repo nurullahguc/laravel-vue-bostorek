@@ -30,7 +30,7 @@
             </div>
             <div className="row border-bottom pb-2">
               <div className="col-lg-6"><strong>Rating</strong></div>
-              <div className="col-lg-6">8.2 - (23 rates)</div>
+              <div className="col-lg-6">{{ avarageRating }} - ( {{ratingCount }} rates)</div>
             </div>
             <div className="row border-bottom pb-2">
               <div className="col-lg-6"><strong>Upload Date</strong></div>
@@ -43,24 +43,38 @@
     <div className="row mt-3">
       <div className="col-md-6">
         <div className="box">
-          <h3 style="color: var(--primary-color)">Rate The Book</h3>
-          <form>
-            <!-- Rating Input -->
-            <div className="mb-3">
-              <input
-                  type="number"
-                  id="rating"
-                  className="form-control w-50"
-                  min="1"
-                  max="10"
-                  placeholder="Rate (1-10)"
-                  required
-              />
-            </div>
 
-            <!-- Submit Button -->
-            <button type="submit" className="btn btn-primary">Rate</button>
-          </form>
+          <div v-if="isLoggedIn">
+
+            <div v-if="!isUserAlreadyRated">
+
+              <h3 style="color: var(--primary-color)">Rate The Book</h3>
+              <form @submit.prevent="addRate()">
+                <!-- Rating Input -->
+                <div className="mb-3">
+                  <input
+                      type="number"
+                      id="rating"
+                      className="form-control w-50"
+                      min="1"
+                      max="10"
+                      placeholder="Rate (1-10)"
+                      required
+                      v-model="userRate"
+                  />
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" className="btn btn-primary">Rate</button>
+              </form>
+            </div>
+            <div v-else>
+              Your Rate: {{ userRating }}
+            </div>
+          </div>
+          <router-link v-else to="/login">
+            <p style="color: var(--secondary-color)">Login to leave a rate.</p>
+          </router-link>
         </div>
       </div>
     </div>
@@ -160,9 +174,12 @@
 import SectionHeader from '@/components/SectionHeader.vue';
 import {useBookStore} from '@/stores/bookStore.js';
 import {useCommentStore} from '@/stores/commentStore.js';
+import {useAuthStore} from "@/stores/authStore.js";
+import {useRatingStore} from "@/stores/ratingStore.js";
+import {useUserStore} from "@/stores/userStore.js";
+
 import {mapState, mapActions} from 'pinia';
 import {useToast} from "vue-toastification";
-import {useAuthStore} from "@/stores/authStore.js";
 
 export default {
   name: 'BookDetailView',
@@ -174,16 +191,22 @@ export default {
       book: null,
       loading: true,
       commentContent: "",
+      userRate: null,
     };
   },
   created() {
     this.selectBook();
     this.fetchCommentsForBook(this.$route.params.id);
+    this.fetchRatingForBook(this.$route.params.id);
   },
   methods: {
     ...mapActions(useCommentStore, [
       'addNewComment',
       'fetchCommentsForBook'
+    ]),
+    ...mapActions(useRatingStore, [
+      'addNewRate',
+      'fetchRatingForBook'
     ]),
     async addComment() {
       const toast = useToast();
@@ -238,6 +261,24 @@ export default {
       this.book = this.selectedBook(bookId);
       this.loading = false;
     },
+    async addRate() {
+      try {
+        const bookId = this.$route.params.id;
+        const rate = this.userRate;
+
+        const response = await this.addNewRate({
+          bookId,
+          rate,
+        });
+
+        this.fetchRatingForBook(this.$route.params.id);
+
+        this.userRate = null;
+
+      } catch (e) {
+
+      }
+    }
   },
   computed: {
     ...mapState(useBookStore, [
@@ -245,10 +286,37 @@ export default {
     ]),
     ...mapState(useAuthStore, [
       'isLoggedIn',
+      'user',
     ]),
     ...mapState(useCommentStore, [
       'commentsForBook',
     ]),
+    ...mapState(useRatingStore, [
+      'ratingsForBook',
+    ]),
+    avarageRating() {
+      if (this.ratingsForBook.length > 0) {
+        const totalRating = this.ratingsForBook.reduce((sum, rating) => sum + rating.rate, 0);
+
+        return (totalRating / this.ratingsForBook.length).toFixed(1);
+
+      } else {
+        return 0;
+      }
+    },
+    ratingCount() {
+      return this.ratingsForBook ? this.ratingsForBook.length : 0;
+    },
+    isUserAlreadyRated() {
+      if (!this.user)
+        return false;
+
+      return this.ratingsForBook.some((rating) => rating.user.id === this.user.id);
+    },
+    userRating() {
+      const userRatingObj = this.ratingsForBook.find((rating) => rating.user.id === this.user.id);
+      return userRatingObj ? userRatingObj.rate : null;
+    }
   },
 };
 </script>
