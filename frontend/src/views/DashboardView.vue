@@ -15,6 +15,12 @@
                   type="button" role="tab" aria-controls="books-tab-pane" aria-selected="false">Books
           </button>
         </li>
+        <li class="nav-item" role="presentation" @click="activeTab='comments'">
+          <button :class="{active: activeTab === 'comments'}" class="nav-link" id="comments-tab" data-bs-toggle="tab"
+                  data-bs-target="#comments-tab-pane"
+                  type="button" role="tab" aria-controls="comments-tab-pane" aria-selected="false">Comments
+          </button>
+        </li>
       </ul>
       <div class="tab-content py-4" id="dashboardContent">
         <div class="tab-pane fade" :class="{'show active': activeTab==='general'}" id="general-tab-pane" role="tabpanel"
@@ -25,6 +31,10 @@
              aria-labelledby="books-tab" tabindex="0">
           <DashboardBooks/>
         </div>
+        <div class="tab-pane fade" :class="{'show active': activeTab === 'comments'}" id="comments-tab-pane" role="tabpanel"
+             aria-labelledby="comments-tab" tabindex="0">
+          <DashboardComments/>
+        </div>
       </div>
     </div>
   </section>
@@ -33,14 +43,15 @@
 <script>
 import DashboardGeneral from "@/components/dashboard/DashboardGeneral.vue";
 import DashboardBooks from "@/components/dashboard/DashboardBooks.vue";
+import DashboardComments from "@/components/dashboard/DashboardComments.vue";
 
 export default {
   name: "DashboardView",
-  components: {DashboardGeneral, DashboardBooks},
+  components: {DashboardGeneral, DashboardBooks, DashboardComments},
 
   data() {
     return {
-      activeTab: 'books',
+      activeTab: 'comments',
     }
   },
 

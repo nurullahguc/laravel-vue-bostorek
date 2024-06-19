@@ -54,6 +54,16 @@ class CommentController extends Controller
         return response()->json(['status' => 200, 'comments' => $comments], 200);
     }
 
+    public function comment4User()
+    {
+        $comments = Comment::with('book')
+            ->where('posted_by', Auth::id())
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json(['status' => 200, 'comments' => $comments], 200);
+    }
+
     public function show(Comment $comment)
     {
         //

@@ -15,4 +15,9 @@ class Comment extends Model
     {
         return $this->hasOne(User::class, 'id', 'posted_by');
     }
+
+    public function book()
+    {
+        return $this->hasOne(Book::class, 'id', 'book_id');
+    }
 }
