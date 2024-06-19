@@ -36,9 +36,21 @@ export const useBookStore = defineStore('bookStore', {
             }
         },
         async addNewBook(newBook) {
-            this.isLoading = true;
             try {
                 const response = await axios.post("http://127.0.0.1:8000/api/books", newBook);
+                return response;
+            } catch (e) {
+                throw e;
+            }
+        },
+        async editTheBook(bookId, bookData) {
+            try {
+                const response = await axios.put(`http://127.0.0.1:8000/api/books/${bookId}`, bookData);
+                const updatedBookData = response.data.book;
+                const bookIndex = this.books.findIndex((book => book.id = bookId));
+                if (bookIndex !== -1)
+                    this.books.splice(bookIndex, 1, updatedBookData);
+
                 return response;
             } catch (e) {
                 throw e;
