@@ -1,29 +1,38 @@
 <template>
   <section class="full-section-height">
     <div class="container">
-      <form @submit.prevent="handleSubmit" class="mt-5">
-
-
-        <div v-if="v$.$errors.length > 0" class="mt-4 d-flex align-items-center justify-content-center">
-          <div class="alert alert-danger">Errors:
-            <ul>
-              <li v-for="error in v$.$errors" :key="error.$uid">
-                {{ error.$property }} {{ error.$message }}
-              </li>
-            </ul>
-          </div>
-        </div>
-
+      <form @submit.prevent="submitForm">
         <div class="row justify-content-center">
           <!-- Email Field (Medium and Larger Screens) -->
           <div class="col-md-6 col-8 mb-3">
             <label for="email" class="form-label">Email</label>
-            <input :class="emailValidClass"
-                   type="text" class="form-control"
-                   v-model.trim="formData.email" id="email" name="email">
-            <span v-for="error in v$.email.$errors" :key="error.$uid" class="text-danger">
-              {{ error.$message }}
-              </span>
+            <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                v-model.trim="formData.email"
+                required
+                autocomplete="off"
+                :class="{
+                'is-valid': isEmailValid,
+                'is-invalid':
+                  (!isEmailValid && showEmailWarningMessage) ||
+                  notFoundEmail === formData.email,
+              }"
+                @focus="showEmailWarningMessage = true"
+                @blur="showEmailWarningMessage = false"
+            />
+            <span
+                v-if="showEmailWarningMessage && !isEmailValid"
+                class="text-danger small"
+            >Please provide a valid email!</span
+            >
+            <span
+                v-if="notFoundEmail === formData.email"
+                class="text-danger small"
+            >{{ `${notFoundEmail} is not found!` }}</span
+            >
           </div>
         </div>
 
@@ -31,15 +40,33 @@
         <div class="row justify-content-center">
           <div class="col-md-6 col-8 mb-3">
             <label for="password" class="form-label">Password</label>
-            <input :class="passwordValidClass" type="password" class="form-control" v-model="formData.password"
-                   id="password" name="password">
-            <span v-for="error in v$.password.$errors" :key="error.$uid" class="text-danger">
-              {{ error.$message }}
-              </span>
+            <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                v-model.trim="formData.password"
+                required
+                :class="{
+                'is-valid': isPasswordValid,
+                'is-invalid':
+                  (!isPasswordValid && showPasswordWarningMessage) ||
+                  !isPasswordMatch,
+              }"
+                @focus="showPasswordWarningMessage = true"
+                @blur="showPasswordWarningMessage = false"
+                @input="isPasswordMatch = true"
+            />
+            <span
+                v-if="showPasswordWarningMessage && !isPasswordValid"
+                class="text-danger small"
+            >Password must be between 4 and 10 characters!</span
+            >
+            <span v-if="!isPasswordMatch" class="text-danger small"
+            >Your password is not true!</span
+            >
           </div>
         </div>
-        <!--<pre>{{ v$.$errors }}</pre>-->
-
 
         <!-- Submit Button -->
         <div class="row justify-content-center">
@@ -52,76 +79,70 @@
   </section>
 </template>
 
-<script setup>
-import {useAuthStore} from "@/stores/authStore.js";
-import {useToast} from "vue-toastification";
-import {useVuelidate} from '@vuelidate/core'
-import {required, email, helpers} from '@vuelidate/validators'
-import {reactive, computed} from "vue";
-import {useRouter} from "vue-router";
+<script>
+import { useAuthStore } from '@/stores/authStore.js';
+import { mapActions } from 'pinia';
+import { useToast } from 'vue-toastification';
+export default {
+  name: 'LoginView',
+  data() {
+    return {
+      formData: {
+        email: '',
+        password: '',
+      },
+      showEmailWarningMessage: false,
+      showPasswordWarningMessage: false,
+      notFoundEmail: null,
+      isPasswordMatch: true,
+    };
+  },
+  methods: {
+    ...mapActions(useAuthStore, ['login']),
+    async submitForm() {
+      try {
+        await this.login(this.formData);
 
-const formData = reactive({
-  email: '',
-  password: '',
-})
+        const toast = useToast();
 
-const emailValidClass = computed(() => {
-  return {
-    'is-valid': v$.value.email.$errors.length === 0,
-    'is-invalid': v$.value.email.$errors.length > 0,
-  }
-})
+        toast.success('You will be redirected to the dashboard page', {
+          position: 'top-right',
+          timeout: 3500,
+          closeButton: 'button',
+          icon: true,
+          rtl: false,
+        });
 
-const passwordValidClass = computed(() => {
-  return {
-    'is-valid': v$.value.password.$errors.length === 0,
-    'is-invalid': v$.value.password.$errors.length > 0,
-  }
-})
+        setTimeout(() => {
+          this.$router.push('/dashboard');
+        }, 4000);
+      } catch (data) {
+        const { error } = data;
 
-const authStore = useAuthStore();
-const router = useRouter();
+        if (error === 'User not found!') {
+          this.notFoundEmail = this.formData.email;
+        } else if (error === 'Your password is not true') {
+          this.isPasswordMatch = false;
+        }
+      }
+    },
+  },
 
-const rules = {
-  email: {required, email},
-  password: {required},
-}
-
-const v$ = useVuelidate(rules, formData);
-
-const handleSubmit = async () => {
-
-  const toast = useToast();
-
-
-  try {
-    const result = await v$.value.$validate();
-    await authStore.login(formData)
-
-    toast.success("You will be redirect to dashboard page.", {
-      position: "bottom-left",
-      timeout: 2000,
-      closeButton: 'button',
-      icon: true,
-    })
-
-    router.push('/dashboard')
-  } catch (error) {
-
-    toast.error(error.response.data.message, {
-      position: "bottom-left",
-      timeout: 2000,
-      closeButton: 'button',
-      icon: true,
-    })
-
-    console.error("Error at login: ", error);
-  }
-}
-
+  computed: {
+    isFormValid() {
+      return this.isEmailValid && this.isPasswordValid;
+    },
+    isEmailValid() {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.formData.email);
+    },
+    isPasswordValid() {
+      return (
+          this.formData.password.length >= 4 &&
+          this.formData.password.length <= 10
+      );
+    },
+  },
+};
 </script>
 
-<style scoped>
-
-
-</style>
+<style lang="scss" scoped></style>
