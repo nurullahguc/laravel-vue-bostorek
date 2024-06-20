@@ -21,7 +21,31 @@
   </nav>
 </template>
 
-<script>
+<script setup>
+import {ref, reactive} from "vue";
+
+const props = defineProps({
+  currentPage: {
+    type: Number,
+    required: true
+  },
+  totalPages: {
+    type: Number,
+    required: true
+  }
+})
+
+
+const emit = defineEmits([
+  'page-changed',
+])
+
+const goToPage = (page) => {
+  emit('page-changed', page)
+}
+</script>
+
+<!--<script>
 export default {
   name: "PaginationWidget",
   emits: ['page-changed'],
@@ -42,7 +66,7 @@ export default {
     }
   }
 }
-</script>
+</script>-->
 
 <style scoped>
 

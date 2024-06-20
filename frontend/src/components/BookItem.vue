@@ -44,8 +44,6 @@ export default {
     },
     ratingBadgeClass() {
 
-      console.log("this.book", this.book);
-
       if (this.avarageRating > 7 || this.avarageRating === "-") {
         return 'bg-success';
       } else if (this.avarageRating > 4) {

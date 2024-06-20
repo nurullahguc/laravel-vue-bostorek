@@ -11,7 +11,7 @@ export const useCommentStore = defineStore('commentStore', {
         async fetchComments() {
             try {
                 const response = await axios.get("http://127.0.0.1:8000/api/comments");
-                console.log(response.data.comments);
+                // console.log(response.data.comments);
                 this.comments = response.data.comments;
             } catch (e) {
                 console.error("Error at fetching comments. Err: ", e)
