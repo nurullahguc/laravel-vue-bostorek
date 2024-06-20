@@ -93,77 +93,70 @@
   </section>
 </template>
 
-<script>
+<script setup>
 import CarouselWidget from "@/components/widgets/CarouselWidget.vue";
+import SectionHeader from "@/components/SectionHeader.vue";
 import hero_1 from "@/assets/images/hero_1.jpg";
 import hero_2 from "@/assets/images/hero_2.jpg";
 import hero_3 from "@/assets/images/hero_3.jpg";
-import SectionHeader from "@/components/SectionHeader.vue";
 import {useBookStore} from "@/stores/bookStore.js";
 import {useCommentStore} from "@/stores/commentStore.js";
-import {mapState} from "pinia"
+import {ref, reactive, computed} from "vue";
 
-export default {
-  name: "HomeView",
-  components: {CarouselWidget, SectionHeader},
-  data() {
-    return {
-      carouselItems: [
-        {
-          imageUrl: hero_1,
-          subtitle: 'Liberte',
-          title: 'Lorem Ipsum Dolor Sit Amet',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-        },
-        {
-          imageUrl: hero_2,
-          subtitle: 'Egalite',
-          title: 'Excepteur Sint Occaecat Cupidatat',
-          description: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-        },
-        {
-          imageUrl: hero_3,
-          subtitle: 'Fraternite',
-          title: 'Neque Porro Quisquam Est',
-          description: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.'
-        }
-      ],
-      selectedFilter: 'latest',
-      openAcardionIndex: 0,
-      bookStore: useBookStore()
-    }
+const carouselItems = reactive([
+  {
+    imageUrl: hero_1,
+    subtitle: 'Liberte',
+    title: 'Lorem Ipsum Dolor Sit Amet',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   },
-  methods: {
-    selectFilter(name) {
-      this.selectedFilter = name
-    },
-    toggleAccordion(index) {
-      if (this.openAcardionIndex === index) {
-        this.openAcardionIndex = -1
-      } else {
-        this.openAcardionIndex = index
-      }
-    }
+  {
+    imageUrl: hero_2,
+    subtitle: 'Egalite',
+    title: 'Excepteur Sint Occaecat Cupidatat',
+    description: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
   },
-  computed: {
-    ...mapState(useBookStore, ['books', 'isLoading', 'latest4Books', 'rated4Books']),
-    ...mapState(useCommentStore, ['comments']),
-    filteredBooks() {
-      const copiedBooks = [...this.books];
-      if (this.selectedFilter === 'latest') {
-        return this.latest4Books
-      } else if (this.selectedFilter === 'best') {
-        return this.rated4Books;
-      }
-    },
-    prepared4Comments() {
-      return this.comments
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .slice(0, 4);
-    }
+  {
+    imageUrl: hero_3,
+    subtitle: 'Fraternite',
+    title: 'Neque Porro Quisquam Est',
+    description: 'Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.'
+  }
+]);
 
+const selectedFilter = ref('latest');
+const openAcardionIndex = ref(0);
+const bookStore = useBookStore();
+const commentStore = useCommentStore();
+
+const selectFilter = (name) => {
+  selectedFilter.value = name;
+}
+
+const toggleAccordion = (index) => {
+  if (openAcardionIndex.value === index) {
+    openAcardionIndex.value = -1
+  } else {
+    openAcardionIndex.value = index
   }
 }
+
+const filteredBooks = computed(() => {
+  if (selectedFilter.value === 'latest') {
+    return bookStore.latest4Books;
+  } else if (selectedFilter.value === 'best') {
+    return bookStore.rated4Books;
+  }
+});
+
+const prepared4Comments = computed(() => {
+  return commentStore.comments
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 4);
+});
+
+const isLoading = computed(() => bookStore.isLoading);
+
 </script>
 
 <style scoped>
